@@ -398,7 +398,11 @@ class AbstractDataBase(with_metaclass(MetaAbstractDataBase,
                 self._tick_fill()
 
     def next(self, datamaster=None, ticks=True):
-
+        if self.lines.datetime[0] > datamaster.lines.datetime[0]:
+            # can't deliver new bar, too early, go back
+            self.rewind()
+            return False # <-- This needs to be added since bar is not delivered
+        
         if len(self) >= self.buflen():
             if ticks:
                 self._tick_nullify()
